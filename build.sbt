@@ -191,7 +191,7 @@ lazy val classparseJVM = classparse.jvm
 lazy val classparseJS = classparse.js
 lazy val classparseNative = classparse.native
 
-lazy val perftests = crossProject(JSPlatform, JVMPlatform, NativePlatform)
+lazy val perftests = crossProject(JSPlatform, JVMPlatform)
   .dependsOn(
     fastparse % "compile->compile;compile->test",
     fastparseByte % "compile->compile;compile->test",
