@@ -6,15 +6,18 @@ shared
 noPublish
 
 def macroDependencies(version: String) =
-  Seq(
-    "org.scala-lang" % "scala-reflect" % version % "provided",
-    "org.scala-lang" % "scala-compiler" % version % "provided"
-  ) ++
-  (if (version startsWith "2.10.")
-     Seq(compilerPlugin("org.scalamacros" % s"paradise" % "2.1.0" cross CrossVersion.full),
-         "org.scalamacros" %% s"quasiquotes" % "2.1.0")
-   else
-     Seq())
+  if (version.startsWith("0.")) Seq() // Dotty
+  else {
+    Seq(
+      "org.scala-lang" % "scala-reflect" % version % "provided",
+      "org.scala-lang" % "scala-compiler" % version % "provided"
+    ) ++
+    (if (version startsWith "2.10.")
+       Seq(compilerPlugin("org.scalamacros" % s"paradise" % "2.1.0" cross CrossVersion.full),
+           "org.scalamacros" %% s"quasiquotes" % "2.1.0")
+     else
+       Seq())
+  }
 
 val shared = Seq(
   libraryDependencies ++= macroDependencies(scalaVersion.value),
@@ -81,7 +84,7 @@ lazy val utils = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   )
   .nativeSettings(nativeSettings)
 lazy val utilsJS = utils.js
-lazy val utilsJVM= utils.jvm
+lazy val utilsJVM= utils.jvm.settings(dottySettings)
 lazy val utilsNative = utils.native
 
 lazy val fastparse = crossProject(JSPlatform, JVMPlatform, NativePlatform)
@@ -123,7 +126,7 @@ lazy val fastparse = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .jvmSettings(fork in (Test, run) := true)
   .nativeSettings(nativeSettings)
 lazy val fastparseJS = fastparse.js
-lazy val fastparseJVM = fastparse.jvm
+lazy val fastparseJVM = fastparse.jvm.settings(dottySettings)
 lazy val fastparseNative = fastparse.native
 
 lazy val fastparseByte = crossProject(JSPlatform, JVMPlatform, NativePlatform)
@@ -243,4 +246,12 @@ lazy val readme = scalatex.ScalatexReadme(
   is212Only,
   (unmanagedSources in Compile) += baseDirectory.value/".."/"project"/"Constants.scala",
   noPublish
+)
+
+
+lazy val dottyVersion = dottyLatestNightlyBuild.get
+lazy val dottySettings = List(
+  scalaVersion := dottyVersion,
+  libraryDependencies := libraryDependencies.value.map(_.withDottyCompat(scalaVersion.value)),
+  scalacOptions := List("-language:Scala2,implicitConversions")
 )
