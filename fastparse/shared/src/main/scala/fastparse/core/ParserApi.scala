@@ -18,7 +18,7 @@ abstract class ParserApi[+T, Elem, Repr]()(implicit repr: ReprOps[Elem, Repr]) {
    * Makes this parser opaque, i.e. hides it and its inner parsers
    * from the stack trace, providing the specified message instead.
    */
-  def opaque(msg: String = toString): Parser[T, Elem, Repr]
+  def `opaque`(msg: String = toString): Parser[T, Elem, Repr]
 
   /**
    * Repeats this parser 0 or more times
@@ -101,7 +101,7 @@ class ParserApiImpl[+T, Elem, Repr](self: Parser[T, Elem, Repr])
 
   def log(msg: String = self.toString)(implicit output: Logger) = Logged(self, msg, output.f)
 
-  def opaque(msg: String = self.toString) = Opaque(self, msg)
+  def `opaque`(msg: String = self.toString) = Opaque(self, msg)
 
   def rep[R](implicit ev: Repeater[T, R]): Parser[R, Elem, Repr] =
     Repeat(self, 0, Int.MaxValue, Pass[Elem, Repr]())
