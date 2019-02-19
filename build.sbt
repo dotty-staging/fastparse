@@ -93,7 +93,7 @@ lazy val fastparse = crossProject(JSPlatform, JVMPlatform, NativePlatform)
     shared,
     name := "fastparse",
     sourceGenerators in Compile += Def.task {
-      val dir = (sourceManaged in Compile).value 
+      val dir = (sourceManaged in Compile).value
       val file = dir/"fastparse"/"core"/"SequencerGen.scala"
       // Only go up to 21, because adding the last element makes it 22
       val tuples = (2 to 21).map{ i =>
@@ -249,9 +249,7 @@ lazy val readme = scalatex.ScalatexReadme(
 )
 
 
-lazy val dottyVersion = dottyLatestNightlyBuild.get
 lazy val dottySettings = List(
-  scalaVersion := dottyVersion,
   libraryDependencies := libraryDependencies.value.map(_.withDottyCompat(scalaVersion.value)),
   scalacOptions := List("-language:Scala2,implicitConversions")
 )
