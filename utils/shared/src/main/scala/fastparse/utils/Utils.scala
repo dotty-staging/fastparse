@@ -174,7 +174,7 @@ object Utils {
     }
     val word: Boolean = strings.exists(_.isEmpty) || arr.isEmpty
 
-    def apply(c: Elem): TrieNode[Elem] = {
+    def apply(c: Elem): TrieNode[Elem] | Null = {
       val ci = helper.toInt(c)
       if (ci > max || ci < min) null
       else arr(ci - min)

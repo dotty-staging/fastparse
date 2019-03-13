@@ -46,7 +46,7 @@ object StringReprOps extends ReprOps[Char, String] {
           i += 1
         }
         s"$line:$col"
-      case _ => String.valueOf(index)
+      case _ => index.toString
     }
   }
 
