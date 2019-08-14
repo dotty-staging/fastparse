@@ -267,15 +267,15 @@ object Mutable{
   case class Failure[Elem, Repr](var input: ParserInput[Elem, Repr],
                                  fullStack: mutable.Buffer[Frame],
                                  var index: Int,
-                                 var lastParser: Parser[_, Elem, Repr],
+                                 var lastParser: Parser[_, Elem, Repr] | Null,
                                  originalParser: Parser[_, Elem, Repr],
                                  originalIndex: Int,
                                  traceIndex: Int,
                                  var traceParsers: Set[Parser[_, Elem, Repr]],
                                  var cut: Boolean) extends Mutable[Nothing, Elem, Repr]{
     def toResult = {
-      val extra = new Parsed.Failure.Extra.Impl(input, originalParser, originalIndex, lastParser, index)
-      Parsed.Failure(lastParser, index, extra)
+      val extra = new Parsed.Failure.Extra.Impl(input, originalParser, originalIndex, lastParser.nn, index)
+      Parsed.Failure(lastParser.nn, index, extra)
     }
   }
 }
@@ -297,7 +297,7 @@ case class ParseCtx[Elem, Repr](input: ParserInput[Elem, Repr],
                                 traceIndex: Int,
                                 originalParser: Parser[_, Elem, Repr],
                                 originalIndex: Int,
-                                instrument: (Parser[_, Elem, Repr], Int, () => Parsed[_, Elem, Repr]) => Unit,
+                                instrument: ((Parser[_, Elem, Repr], Int, () => Parsed[_, Elem, Repr]) => Unit) | Null,
                                 var isFork: Boolean,
                                 var isCapturing: Boolean,
                                 var isNoCut: Boolean) {
@@ -353,14 +353,14 @@ abstract class Parser[+T, Elem, Repr]()(implicit val reprOps: ReprOps[Elem, Repr
    */
   def parse(input: Repr,
             index: Int = 0,
-            instrument: InstrumentCallback = null)
+            instrument: InstrumentCallback | Null = null)
       : Parsed[T, Elem, Repr] = {
     parseInput(IndexedParserInput(input), index, instrument)
   }
 
   def parseIterator(input: Iterator[Repr],
                     index: Int = 0,
-                    instrument: InstrumentCallback = null)
+                    instrument: InstrumentCallback | Null = null)
                    (implicit ct: ClassTag[Elem])
       : Parsed[T, Elem, Repr] = {
     parseInput(IteratorParserInput(input), index, instrument)
@@ -368,7 +368,7 @@ abstract class Parser[+T, Elem, Repr]()(implicit val reprOps: ReprOps[Elem, Repr
 
   def parseInput(input: ParserInput[Elem, Repr],
                  index: Int = 0,
-                 instrument: InstrumentCallback = null)
+                 instrument: InstrumentCallback | Null = null)
 
       : Parsed[T, Elem, Repr] = {
     parseRec(
@@ -439,7 +439,7 @@ trait ParserResults[+T, Elem, Repr]{ this: Parser[T, Elem, Repr] =>
    */
   def fail(f: Mutable.Failure[Elem, Repr],
            index: Int,
-           traceParsers: Set[Parser[_, Elem, Repr]] = null,
+           traceParsers: Set[Parser[_, Elem, Repr]] | Null = null,
            cut: Boolean = false) = {
     f.index = index
     f.cut = cut
@@ -473,7 +473,7 @@ trait ParserResults[+T, Elem, Repr]{ this: Parser[T, Elem, Repr] =>
   def failMore(f: Mutable.Failure[Elem, Repr],
                index: Int,
                logDepth: Int,
-               traceParsers: Set[Parser[_, Elem, Repr]] = null,
+               traceParsers: Set[Parser[_, Elem, Repr]] | Null = null,
                cut: Boolean = false): Mutable.Failure[Elem, Repr] = {
 
     if (f.traceIndex != -1) {

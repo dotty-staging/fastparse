@@ -150,18 +150,18 @@ object Intrinsics {
                                                  val repr: ReprOps[Elem, Repr])
     extends Parser[Unit, Elem, Repr]{
 
-    private[this] val uberSet: Utils.BitSet[Elem] = generatorOrPred match{
+    private[this] val uberSet: Utils.BitSet[Elem] | Null = generatorOrPred match{
       case Left(generator) => BitSet(generator)
       case Right(pred) => null
     }
 
     private[this] val precompute0 = generatorOrPred.isLeft
-    private[this] val predicate0: Elem => Boolean = generatorOrPred match{
+    private[this] val predicate0: (Elem => Boolean) | Null = generatorOrPred match{
       case Left(generator) => null
       case Right(pred) => pred
     }
 
-    def check(e: Elem) = if (precompute0) uberSet(e) else predicate0(e)
+    def check(e: Elem) = if (precompute0) uberSet.nn(e) else predicate0.nn(e)
   }
 
 

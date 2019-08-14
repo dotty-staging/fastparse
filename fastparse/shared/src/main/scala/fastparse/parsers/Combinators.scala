@@ -132,7 +132,7 @@ object Combinators {
               stack.reverse,
               f.input,
               index,
-              Failure.formatParser(f.lastParser, f.input, f.index)
+              Failure.formatParser(f.lastParser.nn, f.input, f.index)
             )
             s"Failure($trace${if (f.cut) ", cut" else ""})"
         }
@@ -432,7 +432,7 @@ object Combinators {
     def parseRec(cfg: ParseCtx[Elem, Repr], index: Int) = {
       @tailrec def rec(index: Int,
                        del: Parser[_, Elem, Repr],
-                       lastFailure: Mutable.Failure[Elem, Repr],
+                       lastFailure: Mutable.Failure[Elem, Repr] | Null,
                        acc: ev.Acc,
                        cut: Boolean,
                        count: Int): Mutable[R, Elem, Repr] = {
@@ -470,7 +470,7 @@ object Combinators {
       }
 
       def passInRange(cut: Boolean,
-                      lastFailure: Mutable.Failure[Elem, Repr],
+                      lastFailure: Mutable.Failure[Elem, Repr] | Null,
                       finalIndex: Int,
                       acc: R,
                       count: Int) = {
@@ -479,7 +479,7 @@ object Combinators {
             if (null == lastFailure) Set.empty[Parser[_, Elem, Repr]]
             else lastFailure.traceParsers
           success(cfg.success, acc, finalIndex, parsers, cut)
-        } else failMore(lastFailure, index, cfg.logDepth, cut = cut)
+        } else failMore(lastFailure.nn, index, cfg.logDepth, cut = cut)
       }
 
       // don't call the parseRec at all, if max is "0", as our parser corresponds to `Pass` in that case.
@@ -513,7 +513,7 @@ object Combinators {
     def parseRec(cfg: ParseCtx[Elem, Repr], index: Int): Mutable[R, Elem, Repr] = {
       @tailrec def rec(index: Int,
                        del: Parser[_, Elem, Repr],
-                       lastFailure: Mutable.Failure[Elem, Repr],
+                       lastFailure: Mutable.Failure[Elem, Repr] | Null,
                        acc: ev.Acc,
                        cut: Boolean,
                        count: Int): Mutable[R, Elem, Repr] = {
@@ -551,7 +551,7 @@ object Combinators {
       }
 
       def passInRange(cut: Boolean,
-                      lastFailure: Mutable.Failure[Elem, Repr],
+                      lastFailure: Mutable.Failure[Elem, Repr] | Null,
                       finalIndex: Int,
                       acc: R,
                       count: Int) = {
@@ -560,7 +560,7 @@ object Combinators {
             if (null == lastFailure) Set.empty[Parser[_, Elem, Repr]]
             else lastFailure.traceParsers
           success(cfg.success, acc, finalIndex, parsers, cut)
-        } else failMore(lastFailure, index, cfg.logDepth, cut = cut)
+        } else failMore(lastFailure.nn, index, cfg.logDepth, cut = cut)
       }
 
       // don't call the parseRec at all, if max is "0", as our parser corresponds to `Pass` in that case.
@@ -580,7 +580,7 @@ object Combinators {
 
   object Either{
     def flatten[T, Elem, Repr](p: Vector[Parser[T, Elem, Repr]]): Vector[Parser[T, Elem, Repr]] = p.flatMap{
-      case Either(ps@_*) => ps
+      case Either(ps: _*) => ps
       case p => Vector(p)
     }
   }
@@ -596,7 +596,7 @@ object Combinators {
       @tailrec def rec(parserIndex: Int, traceParsers: Set[Parser[_, Elem, Repr]]): Mutable[T, Elem, Repr] = {
         if (parserIndex >= n) fail(cfg.failure, index)
         else {
-          var res: Mutable[T, Elem, Repr] = null
+          var res: Mutable[T, Elem, Repr] | Null = null
 
           if (parserIndex == n - 1) {
             res = ps0(parserIndex).parseRec(cfg, index)
@@ -607,7 +607,7 @@ object Combinators {
             cfg.isFork = oldFork
           }
 
-          res match {
+          res.nn match {
             case s: Mutable.Success[T, Elem, Repr] =>
               s.traceParsers = mergeTrace(cfg.traceIndex, s.traceParsers, traceParsers)
               s

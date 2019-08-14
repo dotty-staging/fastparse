@@ -15,4 +15,4 @@ addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.1.0")
 
 addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.9")
 
-addSbtPlugin("ch.epfl.lamp" % "sbt-dotty" % "0.2.2")
+addSbtPlugin("ch.epfl.lamp" % "sbt-dotty" % "0.2.7-SNAPSHOT")

@@ -250,6 +250,7 @@ lazy val readme = scalatex.ScalatexReadme(
 
 
 lazy val dottySettings = List(
+  scalaVersion := "0.13.0-bin-SNAPSHOT",
   libraryDependencies := libraryDependencies.value.map(_.withDottyCompat(scalaVersion.value)),
-  scalacOptions := List("-language:Scala2,implicitConversions")
+  scalacOptions := List("-language:Scala2,implicitConversions", "-Yexplicit-nulls")
 )
