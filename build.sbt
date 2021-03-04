@@ -162,6 +162,10 @@ lazy val `dotty-community-build` = (project in file(".dotty-community-build"))
   .settings(dottySettings)
 
 lazy val dottySettings = List(
-  libraryDependencies := libraryDependencies.value.map(_.withDottyCompat(scalaVersion.value)),
+  libraryDependencies := libraryDependencies.value.map { module =>
+    if (module.name != ScalaArtifacts.Scala3LibraryID && module.crossVersion == CrossVersion.binary)
+      module.cross(CrossVersion.for3Use2_13)
+    else module
+  },
   scalacOptions ++= List("-language:implicitConversions", "-Xignore-scala2-macros", "-source:3.0-migration")
 )
