@@ -5,7 +5,7 @@ lazy val readme = scalatex.ScalatexReadme(
   source = "Readme",
   autoResources = List("out.js", "JProfiler.png")
 ).settings(
-  (resources in Compile) += baseDirectory.value/".."/"out"/"demo"/"fullOpt"/"dest"/"out.js",
+  (Compile / resources) += baseDirectory.value/".."/"out"/"demo"/"fullOpt"/"dest"/"out.js",
   scalaVersion := Scala212
 )
 
@@ -14,7 +14,7 @@ val Scala213 = "2.13.0"
 
 lazy val root = project in file(".")
 
-scalaVersion in ThisBuild := Scala213
+ThisBuild / scalaVersion := Scala213
 
 lazy val commonTestSettings = libraryDependencies ++= Seq(
   "com.lihaoyi" %% "utest" % "0.7.0" cross CrossVersion.for3Use2_13,
@@ -25,19 +25,19 @@ lazy val commonTestSettings = libraryDependencies ++= Seq(
 lazy val fastparse = (project in file("fastparse"))
   .settings(
     name := "fastparse",
-    fork in (Test, run) := true,
+    fork := true,
 
     libraryDependencies += "com.lihaoyi" %% "sourcecode" % "0.1.7" cross CrossVersion.for3Use2_13,
 
-    unmanagedSourceDirectories in Compile ++= {
+    Compile / unmanagedSourceDirectories ++= {
       val base = baseDirectory.value
       Seq(base / "src", base / "src-jvm")
     },
 
-    unmanagedSourceDirectories in Test += baseDirectory.value / "test" / "src",
+    Test / unmanagedSourceDirectories += baseDirectory.value / "test" / "src",
 
-    sourceGenerators in Compile += Def.task {
-      val dir = (sourceManaged in Compile).value
+    Compile / sourceGenerators += Def.task {
+      val dir = (Compile / sourceManaged).value
       val file = dir/"fastparse"/"SequencerGen.scala"
       // Only go up to 21, because adding the last element makes it 22
       val tuples = (2 to 21).map{ i =>
@@ -72,10 +72,10 @@ lazy val fastparse = (project in file("fastparse"))
 lazy val cssparse = (project in file("cssparse"))
   .settings(
     name := "cssparse",
-    fork in (Test, run) := true,
+    fork := true,
     libraryDependencies += "net.sourceforge.cssparser" % "cssparser" % "0.9.18",
-    scalaSource in Compile := baseDirectory.value / "src",
-    unmanagedSourceDirectories in Test ++= {
+    Compile / scalaSource := baseDirectory.value / "src",
+    Test / unmanagedSourceDirectories ++= {
       val base = baseDirectory.value / "test"
       Seq(base / "src", base / "src-jvm")
     }
@@ -87,13 +87,13 @@ lazy val cssparse = (project in file("cssparse"))
 lazy val scalaparse = (project in file("scalaparse"))
   .settings(
     name := "scalaparse",
-    fork in (Test, run) := true,
-    scalaSource in Compile := baseDirectory.value / "src",
-    unmanagedSourceDirectories in Test ++= {
+    fork := true,
+    Compile / scalaSource := baseDirectory.value / "src",
+    Test / unmanagedSourceDirectories ++= {
       val base = baseDirectory.value / "test"
       Seq(base / "src", base / "src-jvm")
     },
-    unmanagedResourceDirectories in Test += baseDirectory.value / "test" / "resources"
+    Test / unmanagedResourceDirectories += baseDirectory.value / "test" / "resources"
   )
   .settings(commonTestSettings)
   .settings(dottySettings)
@@ -102,24 +102,24 @@ lazy val scalaparse = (project in file("scalaparse"))
 lazy val pythonparse = (project in file("pythonparse"))
   .settings(
     name := "pythonparse",
-    fork in (Test, run) := true,
-    scalaSource in Compile := baseDirectory.value / "src",
-    unmanagedSourceDirectories in Test ++= {
+    fork := true,
+    Compile / scalaSource := baseDirectory.value / "src",
+    Test / unmanagedSourceDirectories ++= {
       val base = baseDirectory.value / "test"
       Seq(base / "src", base / "src-jvm")
     },
-    unmanagedResourceDirectories in Test += baseDirectory.value / "test" / "resources"
+    Test / unmanagedResourceDirectories += baseDirectory.value / "test" / "resources"
   )
   .settings(commonTestSettings)
   .settings(dottySettings)
   .dependsOn(fastparse)
 
 lazy val `perftests-common` =
-  unmanagedResourceDirectories in Compile += (baseDirectory in LocalRootProject).value / "perftests" / "resources"
+  Compile / unmanagedResourceDirectories += (LocalRootProject / baseDirectory).value / "perftests" / "resources"
 
 lazy val `perftests-bench2` = (project in file("perftests/bench2"))
   .settings(
-    scalaSource in Compile := baseDirectory.value / "src"
+    Compile / scalaSource := baseDirectory.value / "src"
   )
   .settings(`perftests-common`)
   .settings(commonTestSettings)
@@ -133,7 +133,7 @@ lazy val `perftests-bench2` = (project in file("perftests/bench2"))
 
 lazy val `perftests-compare` = (project in file("perftests/compare"))
   .settings(
-    scalaSource in Compile := baseDirectory.value / "src",
+    Compile / scalaSource := baseDirectory.value / "src",
     libraryDependencies ++= Seq(
       "org.json4s" %% "json4s-ast" % "3.6.7",
       "org.json4s" %% "json4s-native" % "3.6.7",
