@@ -17,7 +17,7 @@ lazy val root = project in file(".")
 scalaVersion in ThisBuild := Scala213
 
 lazy val commonTestSettings = libraryDependencies ++= Seq(
-  "com.lihaoyi" %% "utest" % "0.7.0",
+  "com.lihaoyi" %% "utest" % "0.7.0" cross CrossVersion.for3Use2_13,
   "org.scala-lang" % "scala-reflect" % Scala213,
   "org.scala-lang" % "scala-compiler" % Scala213,
 )
@@ -27,7 +27,7 @@ lazy val fastparse = (project in file("fastparse"))
     name := "fastparse",
     fork in (Test, run) := true,
 
-    libraryDependencies += "com.lihaoyi" %% "sourcecode" % "0.1.7",
+    libraryDependencies += "com.lihaoyi" %% "sourcecode" % "0.1.7" cross CrossVersion.for3Use2_13,
 
     unmanagedSourceDirectories in Compile ++= {
       val base = baseDirectory.value
@@ -141,11 +141,13 @@ lazy val `perftests-compare` = (project in file("perftests/compare"))
       "io.circe" %% "circe-parser" % "0.12.0-RC3",
       "io.argonaut" %% "argonaut" % "6.2.3",
       "com.typesafe.play" %% "play-json" % "2.8.0-M5",
-      "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.9.3",
       "com.lihaoyi" %% "ujson" % "0.7.5",
       "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
-      "org.python" % "jython" % "2.7.1b3"
-    )
+    ).map(_.cross(CrossVersion.for3Use2_13)),
+    libraryDependencies ++= Seq(
+      "org.python" % "jython" % "2.7.1b3",
+      "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.9.3",
+    ),
   )
   .settings(`perftests-common`)
   .settings(commonTestSettings)
@@ -162,6 +164,5 @@ lazy val `dotty-community-build` = (project in file(".dotty-community-build"))
   .settings(dottySettings)
 
 lazy val dottySettings = List(
-  libraryDependencies := libraryDependencies.value.map(_.withDottyCompat(scalaVersion.value)),
   scalacOptions ++= List("-language:implicitConversions", "-Xignore-scala2-macros", "-source:3.0-migration")
 )
