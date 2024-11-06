@@ -10,7 +10,7 @@ lazy val readme = scalatex.ScalatexReadme(
 )
 
 val Scala212 = "2.12.8"
-val Scala213 = "2.13.0"
+val Scala213 = "2.13.15"
 
 lazy val root = project in file(".")
 

@@ -43,10 +43,11 @@ object ScalacParser{
           fail = true
         }
       }
-      override def incompleteInputError(msg: String) = {
+      import scala.reflect.internal.util.CodeAction
+      override def incompleteInputError(msg: String, actions: List[CodeAction]): Unit = {
         fail = true
       }
-      override def syntaxError(offset: Offset, msg: String) = {
+      override def syntaxError(offset: Offset, msg: String, actions: List[CodeAction]): Unit = {
         fail = true
       }
     }
