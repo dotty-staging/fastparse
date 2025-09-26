@@ -50,7 +50,7 @@ object Util {
     var i = 0
     var col = 1
     var cr = false
-    var prev: Character = null
+    var prev: Character = null.asInstanceOf[Character]
     while (i < data.length){
       val char = data(i)
       if (char == '\r') {

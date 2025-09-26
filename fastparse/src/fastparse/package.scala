@@ -31,7 +31,7 @@ package object fastparse {
                parser: P[_] => P[T],
                verboseFailures: Boolean = false,
                startIndex: Int = 0,
-               instrument: Instrument = null): Parsed[T] = {
+               instrument: Instrument | Null = null): Parsed[T] = {
     Parsed.fromParsingRun(parseInputRaw[T](
       input,
       parser,
@@ -47,7 +47,7 @@ package object fastparse {
                        verboseFailures: Boolean = false,
                        startIndex: Int = 0,
                        traceIndex: Int = -1,
-                       instrument: Instrument = null,
+                       instrument: Instrument | Null = null,
                        enableLogging: Boolean = true): ParsingRun[T] = parser(new ParsingRun(
     input = input,
     startIndex = startIndex,
@@ -247,7 +247,7 @@ package object fastparse {
       * `max` to the same value.
       */
     def rep[V](min: Int,// = 0,
-               sep: => P[_],// = null,
+               sep: => P[_] | Null,// = null,
                max: Int,// = Int.MaxValue,
                exactly: Int)// = -1)
               (implicit repeater: Implicits.Repeater[T, V],
@@ -300,7 +300,7 @@ package object fastparse {
       * `max` to the same value.
       */
     def repX[V](min: Int,// = 0,
-                sep: => P[_],// = null,
+                sep: => P[_] | Null,// = null,
                 max: Int,// = Int.MaxValue,
                 exactly: Int)// = -1)
                (implicit repeater: Implicits.Repeater[T, V],
@@ -420,7 +420,7 @@ package object fastparse {
         } else {
           val trace = Parsed.Failure.formatStack(
             ctx.input,
-            ctx.failureStack ++ Seq(ctx.lastFailureMsg.render -> ctx.index)
+            ctx.failureStack ++ Seq(ctx.lastFailureMsg.nn.render -> ctx.index)
           )
           val trailing = ctx.input match {
             case c: IndexedParserInput => Parsed.Failure.formatTrailing(ctx.input, startIndex)

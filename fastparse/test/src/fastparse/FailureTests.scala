@@ -9,7 +9,7 @@ object FailureTests extends TestSuite{
     def checkOffset(input: String,
                     expected: String,
                     label: String,
-                    terminals: String = null,
+                    terminals: String | Null = null,
                     parser: P[_] => P[_]) = {
       val f @ Parsed.Failure(failureString, index, extra) = parse(input, parser(_))
 

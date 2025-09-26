@@ -292,7 +292,7 @@ object fastparseParser{
 
   def params[$: P]: P[Expr.Params] = P( (id ~ ("=" ~ expr).?).rep(0, ",", Int.MaxValue, -1) ~ ",".? ).flatMap{ x =>
     val seen = collection.mutable.Set.empty[String]
-    var overlap: String = null
+    var overlap: String | Null = null
     for((k, v) <- x){
       if (seen(k)) overlap = k
       else seen.add(k)

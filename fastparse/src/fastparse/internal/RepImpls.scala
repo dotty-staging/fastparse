@@ -141,7 +141,7 @@ object MacroRepImpls{
 
 class RepImpls[T](val parse0: () => ParsingRun[T]) extends AnyVal{
   def repX[V](min: Int = 0,
-              sep: => ParsingRun[_] = null,
+              sep: => ParsingRun[_] | Null = null,
               max: Int = Int.MaxValue,
               exactly: Int = -1)
              (implicit repeater: Implicits.Repeater[T, V],
@@ -159,8 +159,8 @@ class RepImpls[T](val parse0: () => ParsingRun[T]) extends AnyVal{
                      count: Int,
                      precut: Boolean,
                      outerCut: Boolean,
-                     sepMsg: Msgs,
-                     lastAgg: Msgs): ParsingRun[V] = {
+                     sepMsg: Msgs | Null,
+                     lastAgg: Msgs | Null): ParsingRun[V] = {
       ctx.cut = precut | (count < min && outerCut)
       if (count == 0 && actualMax == 0) ctx.freshSuccess(repeater.result(acc), startIndex)
       else {
@@ -223,8 +223,8 @@ class RepImpls[T](val parse0: () => ParsingRun[T]) extends AnyVal{
                      count: Int,
                      precut: Boolean,
                      outerCut: Boolean,
-                     sepMsg: Msgs,
-                     lastAgg: Msgs): ParsingRun[V] = {
+                     sepMsg: Msgs | Null,
+                     lastAgg: Msgs | Null): ParsingRun[V] = {
       ctx.cut = precut | (count < min && outerCut)
       parse0()
       val parsedMsg = ctx.shortParserMsg
@@ -261,7 +261,7 @@ class RepImpls[T](val parse0: () => ParsingRun[T]) extends AnyVal{
     rec(ctx.index, 0, false, ctx.cut, null, null)
   }
   def rep[V](min: Int = 0,
-             sep: => ParsingRun[_] = null,
+             sep: => ParsingRun[_] | Null = null,
              max: Int = Int.MaxValue,
              exactly: Int = -1)
             (implicit repeater: Implicits.Repeater[T, V],
@@ -280,8 +280,8 @@ class RepImpls[T](val parse0: () => ParsingRun[T]) extends AnyVal{
                      count: Int,
                      precut: Boolean,
                      outerCut: Boolean,
-                     sepMsg: Msgs,
-                     lastAgg: Msgs): ParsingRun[V] = {
+                     sepMsg: Msgs | Null,
+                     lastAgg: Msgs | Null): ParsingRun[V] = {
       ctx.cut = precut | (count < min && outerCut)
       if (count == 0 && actualMax == 0) ctx.freshSuccess(repeater.result(acc), startIndex)
       else {
@@ -351,8 +351,8 @@ class RepImpls[T](val parse0: () => ParsingRun[T]) extends AnyVal{
                      count: Int,
                      precut: Boolean,
                      outerCut: Boolean,
-                     sepMsg: Msgs,
-                     lastAgg: Msgs): ParsingRun[V] = {
+                     sepMsg: Msgs | Null,
+                     lastAgg: Msgs | Null): ParsingRun[V] = {
 
       ctx.cut = precut | (count < min && outerCut)
       parse0()
@@ -418,9 +418,9 @@ class RepImpls[T](val parse0: () => ParsingRun[T]) extends AnyVal{
   private def aggregateMsgInRep[V](startIndex: Int,
                                    min: Int,
                                    ctx: ParsingRun[Any],
-                                   sepMsg: Msgs,
+                                   sepMsg: Msgs | Null,
                                    parsedMsg: Msgs,
-                                   lastAgg: Msgs,
+                                   lastAgg: Msgs | Null,
                                    precut: Boolean) = {
     if (sepMsg == null || precut) {
       ctx.aggregateMsg(

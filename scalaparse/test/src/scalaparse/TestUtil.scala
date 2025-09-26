@@ -10,8 +10,8 @@ import fastparse._
  */
 object TestUtil {
   def checkNeg[T](input: String,
-                  terminals: String,
-                  aggregate: String,
+                  terminals: String | Null,
+                  aggregate: String | Null,
                   found: String)
                  (implicit line: sourcecode.Line) = {
 //    println("Checking Neg...\n" )

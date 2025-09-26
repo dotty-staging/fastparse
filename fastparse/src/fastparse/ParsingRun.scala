@@ -106,12 +106,12 @@ final class ParsingRun[+T](val input: ParserInput,
                            val startIndex: Int,
                            val originalParser: ParsingRun[_] => ParsingRun[_],
                            val traceIndex: Int,
-                           val instrument: Instrument,
+                           val instrument: Instrument | Null,
                            // Mutable vars below:
                            var failureTerminalAggregate: Msgs,
                            var failureGroupAggregate: Msgs,
                            var shortParserMsg: Msgs,
-                           var lastFailureMsg: Msgs,
+                           var lastFailureMsg: Msgs | Null,
                            var failureStack: List[(String, Int)],
                            var isSuccess: Boolean,
                            var logDepth: Int,
@@ -205,7 +205,7 @@ final class ParsingRun[+T](val input: ParserInput,
     // existing aggregation with `msgToSet`, or we preserve it (with possible
     // additions) with `msgToAggregate`.
     if (checkAggregate(startIndex) && !forceAggregate) failureGroupAggregate = msgToSet
-    else failureGroupAggregate = msgToAggregate
+    else failureGroupAggregate = msgToAggregate.nn
   }
 
   def aggregateTerminal(startIndex: Int, f: () => String): Unit = {

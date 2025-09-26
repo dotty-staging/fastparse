@@ -20,7 +20,7 @@ object Parsed{
   def fromParsingRun[T](p: ParsingRun[T]): Parsed[T] = {
     if (p.isSuccess) Parsed.Success(p.successValue.asInstanceOf[T], p.index)
     else Parsed.Failure(
-      Option(p.lastFailureMsg).fold("")(_.render),
+      Option(p.lastFailureMsg).fold("")(_.nn.render),
       p.index,
       Parsed.Extra(p.input, p.startIndex, p.index, p.originalParser, p.failureStack)
     )
@@ -148,7 +148,7 @@ object Parsed{
 //      println("failureGroupAggregate " + Util.parenthize(p.failureGroupAggregate))
       TracedFailure(
         p.failureTerminalAggregate,
-        p.lastFailureMsg ::: p.failureGroupAggregate,
+        p.lastFailureMsg.nn ::: p.failureGroupAggregate,
         Parsed.fromParsingRun(p).asInstanceOf[Failure]
       )
     }
@@ -168,7 +168,7 @@ object Parsed{
     * @param failure The raw failure object
     */
   case class TracedFailure(terminals: Msgs,
-                           groups: Msgs,
+                           groups: Msgs | Null,
                            failure: Failure){
     def label = failure.label
     def index = failure.index
@@ -176,7 +176,7 @@ object Parsed{
     def stack = failure.extra.stack
     def terminalAggregateString = terminals.render
 
-    def groupAggregateString = groups.render
+    def groupAggregateString = groups.nn.render
 
     @deprecated("Use .msg instead")
     def trace = aggregateMsg
