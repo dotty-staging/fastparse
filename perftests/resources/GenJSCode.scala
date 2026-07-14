@@ -2266,7 +2266,7 @@ with Compat210Component {
 
       if (mustUseAnyComparator) {
         val equalsMethod: Symbol = {
-          val ptfm = platform.asInstanceOf[backend.JavaPlatform with ThisPlatform] // 2.10 compat
+          val ptfm = platform.asInstanceOf[backend.JavaPlatform & ThisPlatform] // 2.10 compat
           if (ltpe <:< BoxedNumberClass.tpe) {
             if (rtpe <:< BoxedNumberClass.tpe) ptfm.externalEqualsNumNum
             else if (rtpe <:< BoxedCharacterClass.tpe) ptfm.externalEqualsNumObject // will be externalEqualsNumChar in 2.12, SI-9030
